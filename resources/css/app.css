@@ -1,0 +1,204 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --dark-blue: #0d1b4c;
+    --dark-blue-2: #08122f;
+    --bg-light: #f4f7fb;
+    --card-bg: #ffffff;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --border-soft: #e5e7eb;
+    --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --radius-lg: 18px;
+    --radius-md: 12px;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+.card {
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-soft) !important;
+    border: 1px solid var(--border-soft) !important;
+}
+
+.card .card-body {
+    padding: 1.25rem;
+}
+
+.btn {
+    border-radius: 10px !important;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-danger:hover,
+.btn-outline-secondary:hover {
+    transform: translateY(-1px);
+    transition: 0.2s ease;
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    min-height: 44px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    border-color: var(--primary-color);
+}
+
+.table {
+    --bs-table-bg: transparent;
+}
+
+.table thead th {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-soft);
+    white-space: nowrap;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    border-color: #f1f3f5;
+}
+
+.badge {
+    font-size: 0.78rem;
+    padding: 0.55em 0.8em;
+    border-radius: 999px;
+}
+
+.page-section-title {
+    font-size: 1.65rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.page-section-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 0;
+}
+
+.sidebar-link {
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateX(3px);
+}
+
+.sidebar-link.active-link {
+    background-color: var(--primary-color);
+    color: #fff !important;
+    box-shadow: 0 8px 18px rgba(13, 110, 253, 0.25);
+}
+
+.kpi-card-value {
+    font-size: 1.9rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.kpi-card-title {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+}
+
+.kpi-card-subtitle {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.soft-panel {
+    background: #fff;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+}
+
+.login-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef3ff 0%, #f8fbff 100%);
+}
+
+.login-brand {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--dark-blue);
+}
+
+.topbar-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.section-spacing {
+    margin-bottom: 1.5rem;
+}
+
+.chart-card {
+    min-height: 420px;
+}
+
+.empty-state-box {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+@media (max-width: 991px) {
+    .sidebar-desktop {
+        display: none !important;
+    }
+}
+.card,
+.btn,
+.nav-link,
+.table tbody tr {
+    transition: all 0.22s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.03);
+}
+
+.chart-card,
+.soft-panel {
+    transition: all 0.25s ease;
+}
