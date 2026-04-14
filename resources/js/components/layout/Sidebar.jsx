@@ -11,7 +11,7 @@ import {
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function Sidebar({ mobile = false, onNavigate = null }) {
+export default function Sidebar({ mobile = false, onNavigate = null, onClose ,isOpen}) {
     const { isAdmin } = useAuth();
 
     const commonLinks = [
@@ -38,43 +38,68 @@ export default function Sidebar({ mobile = false, onNavigate = null }) {
     };
 
     return (
-        <aside className={`sidebar-shell ${mobile ? 'sidebar-mobile-inner' : ''}`}>
-            <div className="sidebar-header-row">
-                <div>
-                    <div className="sidebar-brand-title">LEONI</div>
-                    <div className="sidebar-brand-subtitle">Efficiency Management</div>
+        <>
+            {/* Overlay */}
+            {isOpen && (
+                <div
+                    onClick={onClose}
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'rgba(0,0,0,0.4)',
+                        zIndex: 998,
+                    }}
+                />
+            )}
+
+            {/* Sidebar */}
+            <aside
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: isOpen ? '0' : '-280px',
+                    width: '270px',
+                    height: '100%',
+                    background: 'linear-gradient(180deg, #0d1b4c 0%, #08122f 100%)',
+                    color: '#fff',
+                    padding: '20px',
+                    transition: '0.3s ease',
+                    zIndex: 999,
+                }}
+            >
+                {/* CLOSE BUTTON */}
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <div className="fs-4 fw-bold">LEONI</div>
+                        <small className="opacity-75">Efficiency Management</small>
+                    </div>
+
+                    <button className="btn btn-sm btn-light" onClick={onClose}>
+                        ✕
+                    </button>
                 </div>
 
-                {mobile && (
-                    <button
-                        type="button"
-                        className="btn btn-link text-white p-0 sidebar-close-btn"
-                        onClick={onNavigate}
-                        aria-label="Fermer le menu"
-                    >
-                        <FaTimes size={20} />
-                    </button>
-                )}
-            </div>
-
-            <div className="nav flex-column gap-2 mt-4">
-                {links.map((link) => (
-                    <NavLink
-                        key={link.to}
-                        to={link.to}
-                        end={link.to === '/'}
-                        onClick={handleNavigation}
-                        className={({ isActive }) =>
-                            `nav-link d-flex align-items-center gap-3 px-3 py-3 rounded text-light sidebar-link ${
-                                isActive ? 'active-link' : ''
-                            }`
-                        }
-                    >
-                        <span className="sidebar-icon">{link.icon}</span>
-                        <span>{link.label}</span>
-                    </NavLink>
-                ))}
-            </div>
-        </aside>
+                <div className="nav flex-column gap-2">
+                    {links.map((link) => (
+                        <NavLink
+                            key={link.to}
+                            to={link.to}
+                            onClick={onClose}
+                            className={({ isActive }) =>
+                                `nav-link d-flex align-items-center gap-3 px-3 py-3 rounded text-light ${
+                                    isActive ? 'active-link' : ''
+                                }`
+                            }
+                        >
+                            <span>{link.icon}</span>
+                            <span>{link.label}</span>
+                        </NavLink>
+                    ))}
+                </div>
+            </aside>
+        </>
     );
 }
