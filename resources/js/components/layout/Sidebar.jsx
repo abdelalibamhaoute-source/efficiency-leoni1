@@ -1,4 +1,4 @@
-import React from 'react';
+/*import React from 'react';
 import {
     FaChartLine,
     FaCogs,
@@ -55,6 +55,84 @@ export default function Sidebar() {
                         }
                     >
                         <span>{link.icon}</span>
+                        <span>{link.label}</span>
+                    </NavLink>
+                ))}
+            </div>
+        </aside>
+    );
+}*/
+import React from 'react';
+import {
+    FaChartLine,
+    FaCogs,
+    FaLayerGroup,
+    FaListAlt,
+    FaTachometerAlt,
+    FaUsers,
+    FaTimes,
+} from 'react-icons/fa';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+
+export default function Sidebar({ mobile = false, onNavigate = null }) {
+    const { isAdmin } = useAuth();
+
+    const commonLinks = [
+        { to: '/', label: 'Dashboard', icon: <FaTachometerAlt /> },
+        { to: '/calculations', label: 'Calculer l’efficience', icon: <FaCogs /> },
+        { to: '/history', label: 'Historique', icon: <FaListAlt /> },
+        { to: '/statistics', label: 'Statistiques', icon: <FaChartLine /> },
+    ];
+
+    const adminLinks = [
+        { to: '/teams', label: 'Gestion des équipes', icon: <FaUsers /> },
+        { to: '/references', label: 'Gestion des références', icon: <FaLayerGroup /> },
+        { to: '/configuration/users', label: 'Configuration', icon: <FaCogs /> },
+    ];
+
+    const links = isAdmin ? [...commonLinks, ...adminLinks] : commonLinks;
+
+    const handleNavigation = () => {
+        if (mobile && onNavigate) {
+            onNavigate();
+        }
+    };
+
+    return (
+        <aside className={`sidebar-shell ${mobile ? 'sidebar-mobile-inner' : ''}`}>
+            <div className="sidebar-header-row">
+                <div>
+                    <div className="sidebar-brand-title">LEONI</div>
+                    <div className="sidebar-brand-subtitle">Efficiency Management</div>
+                </div>
+
+                {mobile && (
+                    <button
+                        type="button"
+                        className="btn btn-link text-white p-0 sidebar-close-btn"
+                        onClick={onNavigate}
+                        aria-label="Fermer le menu"
+                    >
+                        <FaTimes size={20} />
+                    </button>
+                )}
+            </div>
+
+            <div className="nav flex-column gap-2 mt-4">
+                {links.map((link) => (
+                    <NavLink
+                        key={link.to}
+                        to={link.to}
+                        end={link.to === '/'}
+                        onClick={handleNavigation}
+                        className={({ isActive }) =>
+                            `nav-link d-flex align-items-center gap-3 px-3 py-3 rounded text-light sidebar-link ${
+                                isActive ? 'active-link' : ''
+                            }`
+                        }
+                    >
+                        <span className="sidebar-icon">{link.icon}</span>
                         <span>{link.label}</span>
                     </NavLink>
                 ))}
