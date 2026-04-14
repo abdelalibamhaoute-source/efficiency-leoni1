@@ -26,7 +26,7 @@ export default function Sidebar({ mobile = false, onNavigate = null, onClose ,is
         { to: '/teams', label: 'Gestion des équipes', icon: <FaUsers /> },
         { to: '/references', label: 'Gestion des références', icon: <FaLayerGroup /> },
         { to: '/configuration/users', label: 'Configuration', icon: <FaCogs /> },
-        { to: '/profile', label: 'Mon profil', icon: <FaUsers /> },
+        
     ];
 
     const links = isAdmin ? [...commonLinks, ...adminLinks] : commonLinks;
