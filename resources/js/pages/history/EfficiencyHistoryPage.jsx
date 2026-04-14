@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { FaSearch, FaTrash } from 'react-icons/fa';
 import api from '../../api/axios';
 import AlertMessage from '../../components/common/AlertMessage';
 import PageHeader from '../../components/common/PageHeader';
@@ -24,6 +25,13 @@ export default function EfficiencyHistoryPage() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
+    const [deleteFilters, setDeleteFilters] = useState({
+        team_ids: [],
+        date_from: '',
+        date_to: '',
+    });
+    const [deleting, setDeleting] = useState(false);
 
     const loadTeams = async () => {
         if (!isAdmin) return;
@@ -78,13 +86,7 @@ export default function EfficiencyHistoryPage() {
         event.preventDefault();
         loadHistories(1, filters);
     };
-    const [message, setMessage] = useState('');
-    const [deleteFilters, setDeleteFilters] = useState({
-        team_ids: [],
-        date_from: '',
-        date_to: '',
-    });
-    const [deleting, setDeleting] = useState(false);
+
     const handleDeleteFilterChange = (event) => {
         const { name, value } = event.target;
 
@@ -154,7 +156,6 @@ export default function EfficiencyHistoryPage() {
         }
     };
 
-
     return (
         <div>
             <PageHeader
@@ -162,19 +163,25 @@ export default function EfficiencyHistoryPage() {
                 subtitle="Consulter, rechercher et filtrer les calculs d’efficience."
             />
 
-            
             <AlertMessage type="success" message={message} />
             <AlertMessage type="danger" message={error} />
+
             {isAdmin && (
                 <div className="card border-0 shadow-sm mb-4">
                     <div className="card-body">
-                        <h5 className="mb-3">Suppression de l’historique par équipe</h5>
+                        <h5 className="mb-3 d-flex align-items-center gap-2">
+                            <FaTrash className="text-danger" />
+                            <span>Suppression de l’historique par équipe</span>
+                        </h5>
 
                         <div className="row g-3 mb-3">
                             <div className="col-md-6">
                                 <label className="form-label">Sélectionner une ou plusieurs équipes</label>
 
-                                <div className="border rounded p-3" style={{ maxHeight: '220px', overflowY: 'auto' }}>
+                                <div
+                                    className="border rounded p-3"
+                                    style={{ maxHeight: '220px', overflowY: 'auto' }}
+                                >
                                     {teams.length > 0 ? (
                                         teams.map((team) => (
                                             <div key={team.id} className="form-check mb-2">
@@ -224,16 +231,18 @@ export default function EfficiencyHistoryPage() {
 
                         <button
                             type="button"
-                            className="btn btn-danger"
+                            className="btn btn-danger d-inline-flex align-items-center gap-2"
                             onClick={handleDeleteHistory}
                             disabled={deleting}
                         >
-                            {deleting ? 'Suppression...' : 'Supprimer l’historique sélectionné'}
+                            <FaTrash />
+                            <span>
+                                {deleting ? 'Suppression...' : 'Supprimer l’historique sélectionné'}
+                            </span>
                         </button>
                     </div>
                 </div>
             )}
-
 
             <div className="card border-0 shadow-sm mb-4">
                 <div className="card-body">
@@ -301,8 +310,12 @@ export default function EfficiencyHistoryPage() {
                         </div>
 
                         <div className="col-md-1">
-                            <button type="submit" className="btn btn-dark w-100">
-                                OK
+                            <button
+                                type="submit"
+                                className="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2"
+                            >
+                                <FaSearch />
+                                <span className="d-none d-md-inline">OK</span>
                             </button>
                         </div>
                     </form>
@@ -312,7 +325,7 @@ export default function EfficiencyHistoryPage() {
             <div className="card border-0 shadow-sm">
                 <div className="card-body">
                     {loading ? (
-                       <LoaderOverlay text="Chargement de l’historique..." />
+                        <LoaderOverlay text="Chargement de l’historique..." />
                     ) : (
                         <div className="table-responsive">
                             <table className="table table-hover align-middle">
@@ -335,14 +348,12 @@ export default function EfficiencyHistoryPage() {
                                         histories.map((history) => (
                                             <tr key={history.id}>
                                                 <td>{history.team?.name}</td>
-                                                <td>
-                                                    {(history.reference_codes || []).join(', ')}
-                                                </td>
+                                                <td>{(history.reference_codes || []).join(', ')}</td>
                                                 <td>{history.operator_count}</td>
                                                 <td>{history.total_gamme_time}</td>
                                                 <td>{history.quantity_total}</td>
                                                 <td>{history.work_time}</td>
-                                               <td>{formatDateTime(history.calculation_date)}</td>
+                                                <td>{formatDateTime(history.calculation_date)}</td>
                                                 <td>{formatPercent(history.efficiency_value)}</td>
                                                 <td>{formatPercent(history.objective)}</td>
                                                 <td>
@@ -351,14 +362,14 @@ export default function EfficiencyHistoryPage() {
                                             </tr>
                                         ))
                                     ) : (
-                                    <tr>
-                                        <td colSpan="10" className="text-center">
-                                            <EmptyState
-                                                title="Aucun historique trouvé"
-                                                description="Essayez de modifier les filtres de recherche."
-                                            />
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td colSpan="10" className="text-center">
+                                                <EmptyState
+                                                    title="Aucun historique trouvé"
+                                                    description="Essayez de modifier les filtres de recherche."
+                                                />
+                                            </td>
+                                        </tr>
                                     )}
                                 </tbody>
                             </table>

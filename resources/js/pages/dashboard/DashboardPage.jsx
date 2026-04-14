@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import AlertMessage from '../../components/common/AlertMessage';
-import PageHeader from '../../components/common/PageHeader';
+import LoaderOverlay from '../../components/common/LoaderOverlay';
+import AnimatedCard from '../../components/common/AnimatedCard';
+import PageWrapper from '../../components/common/PageWrapper';
 import EfficiencyTrendChart from '../../components/dashboard/EfficiencyTrendChart';
 import KpiCard from '../../components/dashboard/KpiCard';
 import RecentHistoryTable from '../../components/dashboard/RecentHistoryTable';
 import { useAuth } from '../../contexts/AuthContext';
-import AnimatedCard from '../../components/common/AnimatedCard';
-import PageWrapper from '../../components/common/PageWrapper';
+import { formatPercent } from '../../utils/formatters';
 
 export default function DashboardPage() {
     const { isAdmin, user } = useAuth();
@@ -48,99 +49,33 @@ export default function DashboardPage() {
     }, [isAdmin, user]);
 
     const summary = isAdmin ? globalStats?.summary : teamStats?.summary;
+
     const trendData = isAdmin
         ? globalStats?.charts?.global_trend || []
         : teamStats?.charts?.efficiency_trend || [];
 
-  /*  return (
-        <div>
-            <PageHeader
-                title="Dashboard"
-                subtitle={
-                    isAdmin
-                        ? 'Vue globale de performance de toutes les équipes.'
-                        : `Vue de performance de votre équipe${user?.team?.name ? ` — ${user.team.name}` : ''}.`
-                }
-            />
-
-            <AlertMessage type="danger" message={error} />
-
-            {loading ? (
-                <p>Chargement...</p>
-            ) : (
-                <>
-                    <div className="row g-3 mb-4">
-                        <div className="col-md-3">
-                            <KpiCard
-                                title="Total calculs"
-                                value={summary?.total_calculations ?? 0}
-                                subtitle="Nombre total de calculs"
-                            />
-                        </div>
-
-                        <div className="col-md-3">
-                            <KpiCard
-                                title="Moyenne efficience"
-                                value={`${summary?.average_efficiency ?? 0}%`}
-                                subtitle="Performance moyenne"
-                            />
-                        </div>
-
-                        <div className="col-md-3">
-                            <KpiCard
-                                title="Meilleure efficience"
-                                value={`${summary?.best_efficiency ?? 0}%`}
-                                subtitle="Valeur maximale"
-                            />
-                        </div>
-
-                        <div className="col-md-3">
-                            <KpiCard
-                                title="Plus faible efficience"
-                                value={`${summary?.lowest_efficiency ?? 0}%`}
-                                subtitle="Valeur minimale"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="row g-4 mb-4">
-                        <div className="col-12">
-                            <EfficiencyTrendChart
-                                data={trendData}
-                                title={
-                                    isAdmin
-                                        ? 'Évolution globale de l’efficience'
-                                        : 'Évolution de l’efficience de votre équipe'
-                                }
-                            />
-                        </div>
-                    </div>
-
-                    <RecentHistoryTable rows={recentHistory} />
-                </>
-            )}
-        </div>
-    );*/
     return (
         <PageWrapper>
             <div>
-                <PageHeader
-                    title="Dashboard"
-                    subtitle={
-                        isAdmin
-                            ? 'Vue globale de performance de toutes les équipes.'
-                            : `Vue de performance de votre équipe${user?.team?.name ? ` — ${user.team.name}` : ''}.`
-                    }
-                />
+                <div className="page-hero">
+                    <div className="soft-panel">
+                        <h1 className="page-section-title">Dashboard</h1>
+                        <p className="page-section-subtitle">
+                            {isAdmin
+                                ? 'Vue globale de performance de toutes les équipes.'
+                                : `Vue de performance de votre équipe${user?.team?.name ? ` — ${user.team.name}` : ''}.`}
+                        </p>
+                    </div>
+                </div>
 
                 <AlertMessage type="danger" message={error} />
 
                 {loading ? (
-                    <p>Chargement...</p>
+                    <LoaderOverlay text="Chargement du dashboard..." />
                 ) : (
                     <>
                         <div className="row g-3 mb-4">
-                            <div className="col-md-3">
+                            <div className="col-md-6 col-xl-3">
                                 <AnimatedCard delay={0.05}>
                                     <KpiCard
                                         title="Total calculs"
@@ -151,33 +86,33 @@ export default function DashboardPage() {
                                 </AnimatedCard>
                             </div>
 
-                            <div className="col-md-3">
+                            <div className="col-md-6 col-xl-3">
                                 <AnimatedCard delay={0.1}>
                                     <KpiCard
                                         title="Moyenne efficience"
-                                        value={`${summary?.average_efficiency ?? 0}%`}
+                                        value={formatPercent(summary?.average_efficiency ?? 0)}
                                         subtitle="Performance moyenne"
                                         accent="success"
                                     />
                                 </AnimatedCard>
                             </div>
 
-                            <div className="col-md-3">
+                            <div className="col-md-6 col-xl-3">
                                 <AnimatedCard delay={0.15}>
                                     <KpiCard
                                         title="Meilleure efficience"
-                                        value={`${summary?.best_efficiency ?? 0}%`}
+                                        value={formatPercent(summary?.best_efficiency ?? 0)}
                                         subtitle="Valeur maximale"
                                         accent="warning"
                                     />
                                 </AnimatedCard>
                             </div>
 
-                            <div className="col-md-3">
+                            <div className="col-md-6 col-xl-3">
                                 <AnimatedCard delay={0.2}>
                                     <KpiCard
                                         title="Plus faible efficience"
-                                        value={`${summary?.lowest_efficiency ?? 0}%`}
+                                        value={formatPercent(summary?.lowest_efficiency ?? 0)}
                                         subtitle="Valeur minimale"
                                         accent="danger"
                                     />

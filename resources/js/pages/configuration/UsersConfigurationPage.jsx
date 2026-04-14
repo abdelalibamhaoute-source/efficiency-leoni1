@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaKey, FaSearch, FaToggleOff, FaToggleOn, FaUserPlus } from 'react-icons/fa';
+import {
+    FaEdit,
+    FaKey,
+    FaSearch,
+    FaTimes,
+    FaToggleOff,
+    FaToggleOn,
+    FaUserPlus,
+    FaUserShield,
+} from 'react-icons/fa';
 import api from '../../api/axios';
 import AlertMessage from '../../components/common/AlertMessage';
 import ConfirmButton from '../../components/common/ConfirmButton';
+import EmptyState from '../../components/common/EmptyState';
+import LoaderOverlay from '../../components/common/LoaderOverlay';
 import PageHeader from '../../components/common/PageHeader';
 import UserForm from '../../components/forms/UserForm';
 
@@ -102,6 +113,18 @@ export default function UsersConfigurationPage() {
         }
     };
 
+    const getRoleBadgeClass = (role) => {
+        if (role === 'admin') return 'bg-dark';
+        if (role === 'shift_leader') return 'bg-primary';
+        return 'bg-secondary';
+    };
+
+    const getRoleLabel = (role) => {
+        if (role === 'admin') return 'Admin';
+        if (role === 'shift_leader') return 'Shift leader';
+        return role || '-';
+    };
+
     return (
         <div>
             <PageHeader
@@ -114,11 +137,20 @@ export default function UsersConfigurationPage() {
 
             <div className="row g-4">
                 <div className="col-lg-4">
-                    <div className="card border-0 shadow-sm">
+                    <div className="card border-0 shadow-sm h-100">
                         <div className="card-body">
                             <h5 className="mb-3 d-flex align-items-center gap-2">
-                                <FaUserPlus className="text-primary" />
-                                <span>{editingUser ? 'Modifier utilisateur' : 'Nouvel utilisateur'}</span>
+                                {editingUser ? (
+                                    <>
+                                        <FaUserShield className="text-primary" />
+                                        <span>Modifier utilisateur</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaUserPlus className="text-primary" />
+                                        <span>Nouvel utilisateur</span>
+                                    </>
+                                )}
                             </h5>
 
                             <UserForm
@@ -131,10 +163,12 @@ export default function UsersConfigurationPage() {
 
                             {editingUser && (
                                 <button
-                                    className="btn btn-secondary mt-3"
+                                    type="button"
+                                    className="btn btn-secondary mt-3 d-inline-flex align-items-center gap-2"
                                     onClick={() => setEditingUser(null)}
                                 >
-                                    Annuler
+                                    <FaTimes />
+                                    <span>Annuler</span>
                                 </button>
                             )}
                         </div>
@@ -155,7 +189,10 @@ export default function UsersConfigurationPage() {
                                     />
                                 </div>
                                 <div className="col-md-3">
-                                    <button type="submit" className="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <button
+                                        type="submit"
+                                        className="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2"
+                                    >
                                         <FaSearch />
                                         <span>Rechercher</span>
                                     </button>
@@ -163,7 +200,7 @@ export default function UsersConfigurationPage() {
                             </form>
 
                             {loading ? (
-                                <p>Chargement...</p>
+                                <LoaderOverlay text="Chargement des utilisateurs..." />
                             ) : (
                                 <div className="table-responsive">
                                     <table className="table table-hover align-middle">
@@ -181,49 +218,64 @@ export default function UsersConfigurationPage() {
                                             {users.length > 0 ? (
                                                 users.map((user) => (
                                                     <tr key={user.id}>
-                                                        <td>{user.name}</td>
+                                                        <td className="fw-semibold">{user.name}</td>
                                                         <td>{user.email}</td>
-                                                        <td>{user.role}</td>
+                                                        <td>
+                                                            <span className={`badge ${getRoleBadgeClass(user.role)}`}>
+                                                                {getRoleLabel(user.role)}
+                                                            </span>
+                                                        </td>
                                                         <td>{user.team?.name || '-'}</td>
                                                         <td>
-                                                            <span className={`badge ${user.is_active ? 'bg-success' : 'bg-secondary'}`}>
+                                                            <span
+                                                                className={`badge ${
+                                                                    user.is_active ? 'bg-success' : 'bg-secondary'
+                                                                }`}
+                                                            >
                                                                 {user.is_active ? 'Oui' : 'Non'}
                                                             </span>
                                                         </td>
-                                                        <td className="d-flex flex-wrap gap-2">
-                                                            <button
-                                                                className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
-                                                                onClick={() => setEditingUser(user)}
-                                                            >
-                                                                <FaEdit />
-                                                                <span className="d-none d-md-inline">Modifier</span>
-                                                            </button>
+                                                        <td>
+                                                            <div className="d-flex flex-wrap gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
+                                                                    onClick={() => setEditingUser(user)}
+                                                                >
+                                                                    <FaEdit />
+                                                                    <span className="d-none d-md-inline">Modifier</span>
+                                                                </button>
 
-                                                            <button
-                                                                className="btn btn-warning btn-sm d-inline-flex align-items-center gap-2"
-                                                                onClick={() => handlePasswordReset(user.id)}
-                                                            >
-                                                                <FaKey />
-                                                                <span className="d-none d-md-inline">Password</span>
-                                                            </button>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-warning btn-sm d-inline-flex align-items-center gap-2"
+                                                                    onClick={() => handlePasswordReset(user.id)}
+                                                                >
+                                                                    <FaKey />
+                                                                    <span className="d-none d-md-inline">Password</span>
+                                                                </button>
 
-                                                            <ConfirmButton
-                                                                className="btn btn-secondary btn-sm d-inline-flex align-items-center gap-2"
-                                                                confirmMessage={`Changer le statut de ${user.name} ?`}
-                                                                onConfirm={() => handleStatusToggle(user)}
-                                                            >
-                                                                {user.is_active ? <FaToggleOff /> : <FaToggleOn />}
-                                                                <span className="d-none d-md-inline">
-                                                                    {user.is_active ? 'Désactiver' : 'Activer'}
-                                                                </span>
-                                                            </ConfirmButton>
+                                                                <ConfirmButton
+                                                                    className="btn btn-secondary btn-sm d-inline-flex align-items-center gap-2"
+                                                                    confirmMessage={`Changer le statut de ${user.name} ?`}
+                                                                    onConfirm={() => handleStatusToggle(user)}
+                                                                >
+                                                                    {user.is_active ? <FaToggleOff /> : <FaToggleOn />}
+                                                                    <span className="d-none d-md-inline">
+                                                                        {user.is_active ? 'Désactiver' : 'Activer'}
+                                                                    </span>
+                                                                </ConfirmButton>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))
                                             ) : (
                                                 <tr>
                                                     <td colSpan="6" className="text-center">
-                                                        Aucun utilisateur trouvé.
+                                                        <EmptyState
+                                                            title="Aucun utilisateur trouvé"
+                                                            description="Essayez un autre mot-clé ou créez un nouvel utilisateur."
+                                                        />
                                                     </td>
                                                 </tr>
                                             )}

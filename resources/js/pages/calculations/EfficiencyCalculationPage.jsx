@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { FaCalculator, FaPlus, FaSearch, FaTrash } from 'react-icons/fa';
 import api from '../../api/axios';
 import AlertMessage from '../../components/common/AlertMessage';
 import PageHeader from '../../components/common/PageHeader';
@@ -298,13 +299,18 @@ export default function EfficiencyCalculationPage() {
 
                                 <div className="mb-3">
                                     <label className="form-label">Recherche référence</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Chercher par code ou 4 derniers chiffres"
-                                        value={referenceSearch}
-                                        onChange={(e) => setReferenceSearch(e.target.value)}
-                                    />
+                                    <div className="input-group">
+                                        <span className="input-group-text">
+                                            <FaSearch />
+                                        </span>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Chercher par code ou 4 derniers chiffres"
+                                            value={referenceSearch}
+                                            onChange={(e) => setReferenceSearch(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
 
                                 <div
@@ -328,10 +334,11 @@ export default function EfficiencyCalculationPage() {
 
                                                 <button
                                                     type="button"
-                                                    className="btn btn-outline-primary btn-sm"
+                                                    className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2"
                                                     onClick={() => handleAddReference(reference)}
                                                 >
-                                                    Ajouter
+                                                    <FaPlus />
+                                                    <span className="d-none d-md-inline">Ajouter</span>
                                                 </button>
                                             </div>
                                         ))
@@ -384,12 +391,13 @@ export default function EfficiencyCalculationPage() {
                                                             <td>
                                                                 <button
                                                                     type="button"
-                                                                    className="btn btn-danger btn-sm"
+                                                                    className="btn btn-danger btn-sm d-inline-flex align-items-center gap-2"
                                                                     onClick={() =>
                                                                         handleRemoveReference(item.product_reference_id)
                                                                     }
                                                                 >
-                                                                    Supprimer
+                                                                    <FaTrash />
+                                                                    <span className="d-none d-md-inline">Supprimer</span>
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -404,10 +412,11 @@ export default function EfficiencyCalculationPage() {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-primary"
+                                    className="btn btn-primary d-inline-flex align-items-center gap-2"
                                     disabled={submitting || selectedReferences.length === 0}
                                 >
-                                    {submitting ? 'Calcul en cours...' : 'Calculer'}
+                                    <FaCalculator />
+                                    <span>{submitting ? 'Calcul en cours...' : 'Calculer'}</span>
                                 </button>
                             </form>
                         </div>
@@ -420,14 +429,16 @@ export default function EfficiencyCalculationPage() {
                             <h5 className="mb-3">Résultat</h5>
 
                             {result ? (
-                               <div className="d-flex flex-column gap-2">
+                                <div className="d-flex flex-column gap-2">
                                     <div><strong>Équipe :</strong> {result.team?.name}</div>
                                     <div><strong>Efficience :</strong> {result.efficiency_value}%</div>
                                     <div><strong>Objectif :</strong> {result.objective}%</div>
                                     <div>
                                         <strong>Statut :</strong>{' '}
                                         <span className={`badge ${result.status === 'above_target' ? 'bg-success' : 'bg-danger'}`}>
-                                            {result.status === 'above_target' ? 'Au-dessus de l’objectif' : 'En-dessous de l’objectif'}
+                                            {result.status === 'above_target'
+                                                ? 'Au-dessus de l’objectif'
+                                                : 'En-dessous de l’objectif'}
                                         </span>
                                     </div>
                                     <div><strong>Temps gamme total :</strong> {result.total_gamme_time}</div>

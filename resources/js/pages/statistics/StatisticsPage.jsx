@@ -10,14 +10,23 @@ import {
     Tooltip,
     XAxis,
     YAxis,
+    Cell,
 } from 'recharts';
+import {
+    FaBullseye,
+    FaLayerGroup,
+    FaChartBar,
+    FaChartLine,
+    FaSearch,
+    FaTrophy,
+    FaArrowDown,
+} from 'react-icons/fa';
 import api from '../../api/axios';
 import AlertMessage from '../../components/common/AlertMessage';
 import PageHeader from '../../components/common/PageHeader';
 import { useAuth } from '../../contexts/AuthContext';
 import LoaderOverlay from '../../components/common/LoaderOverlay';
 import { formatPercent } from '../../utils/formatters';
-import { Cell } from 'recharts';
 import PageWrapper from '../../components/common/PageWrapper';
 import AnimatedCard from '../../components/common/AnimatedCard';
 
@@ -106,6 +115,35 @@ export default function StatisticsPage() {
         loadStatistics(!isAdmin ? user?.team?.id : selectedTeam);
     };
 
+    const statCards = globalStats?.summary
+        ? [
+              {
+                  title: 'Total calculs',
+                  value: globalStats.summary.total_calculations,
+                  icon: <FaChartBar />,
+                  bg: 'linear-gradient(135deg, #0d6efd 0%, #3b82f6 100%)',
+              },
+              {
+                  title: 'Moyenne efficience',
+                  value: formatPercent(globalStats.summary.average_efficiency),
+                  icon: <FaChartLine />,
+                  bg: 'linear-gradient(135deg, #198754 0%, #22c55e 100%)',
+              },
+              {
+                  title: 'Meilleure efficience',
+                  value: formatPercent(globalStats.summary.best_efficiency),
+                  icon: <FaTrophy />,
+                  bg: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+              },
+              {
+                  title: 'Plus faible efficience',
+                  value: formatPercent(globalStats.summary.lowest_efficiency),
+                  icon: <FaArrowDown />,
+                  bg: 'linear-gradient(135deg, #dc3545 0%, #f43f5e 100%)',
+              },
+          ]
+        : [];
+
     return (
         <PageWrapper>
             <div>
@@ -158,8 +196,12 @@ export default function StatisticsPage() {
                             </div>
 
                             <div className="col-md-2 d-flex align-items-end">
-                                <button type="submit" className="btn btn-dark w-100">
-                                    Afficher
+                                <button
+                                    type="submit"
+                                    className="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2"
+                                >
+                                    <FaSearch />
+                                    <span>Afficher</span>
                                 </button>
                             </div>
                         </form>
@@ -167,62 +209,55 @@ export default function StatisticsPage() {
                 </div>
 
                 {loading ? (
-                <LoaderOverlay text="Chargement des statistiques..." />
+                    <LoaderOverlay text="Chargement des statistiques..." />
                 ) : (
                     <>
-                        {globalStats?.summary && (
+                        {statCards.length > 0 && (
                             <div className="row g-3 mb-4">
-                                <div className="col-md-3">
-                                    <AnimatedCard delay={0.05}>
-                                    <div className="card border-0 shadow-sm">
-                                        <div className="card-body">
-                                            <h6>Total calculs</h6>
-                                            <div className="fs-4 fw-bold">
-                                                {globalStats.summary.total_calculations}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </AnimatedCard>
-                                </div>
+                                {statCards.map((card, index) => (
+                                    <div className="col-md-6 col-xl-3" key={card.title}>
+                                        <AnimatedCard delay={0.05 * (index + 1)}>
+                                            <div
+                                                className="card border-0 text-white h-100"
+                                                style={{
+                                                    background: card.bg,
+                                                    borderRadius: '18px',
+                                                    overflow: 'hidden',
+                                                }}
+                                            >
+                                                <div className="card-body d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <div
+                                                            className="fw-semibold opacity-75 mb-2"
+                                                            style={{ fontSize: '0.95rem' }}
+                                                        >
+                                                            {card.title}
+                                                        </div>
+                                                        <div
+                                                            className="fw-bold"
+                                                            style={{ fontSize: '1.9rem', lineHeight: 1.1 }}
+                                                        >
+                                                            {card.value}
+                                                        </div>
+                                                    </div>
 
-                                <div className="col-md-3">
-                                    <AnimatedCard delay={0.1}>
-                                    <div className="card border-0 shadow-sm">
-                                        <div className="card-body">
-                                            <h6>Moyenne efficience</h6>
-                                            <div className="fs-4 fw-bold">
-                                                {formatPercent(globalStats.summary.average_efficiency)}
+                                                    <div
+                                                        className="d-flex align-items-center justify-content-center"
+                                                        style={{
+                                                            width: '48px',
+                                                            height: '48px',
+                                                            borderRadius: '14px',
+                                                            background: 'rgba(255,255,255,0.18)',
+                                                            fontSize: '1.2rem',
+                                                        }}
+                                                    >
+                                                        {card.icon}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </AnimatedCard>
                                     </div>
-                                    </AnimatedCard>
-                                </div>
-
-                                <div className="col-md-3">
-                                    <AnimatedCard delay={0.15}>
-                                    <div className="card border-0 shadow-sm">
-                                        <div className="card-body">
-                                            <h6>Meilleure efficience</h6>
-                                            <div className="fs-4 fw-bold">
-                                                {formatPercent(globalStats.summary.best_efficiency)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </AnimatedCard>
-                                </div>
-
-                                <div className="col-md-3">
-                                    <AnimatedCard delay={0.2}>
-                                    <div className="card border-0 shadow-sm">
-                                        <div className="card-body">
-                                            <h6>Plus faible efficience</h6>
-                                            <div className="fs-4 fw-bold">
-                                                {formatPercent(globalStats.summary.lowest_efficiency)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    </AnimatedCard>
-                                </div>
+                                ))}
                             </div>
                         )}
 
@@ -239,10 +274,11 @@ export default function StatisticsPage() {
                                                 <Tooltip />
                                                 <Legend />
                                                 <Line
-                                                type="monotone"
+                                                    type="monotone"
                                                     dataKey="efficiency"
                                                     name="Efficience"
                                                     stroke="#0d6efd"
+                                                    strokeWidth={3}
                                                 />
                                                 <Line
                                                     type="monotone"
@@ -250,8 +286,8 @@ export default function StatisticsPage() {
                                                     name="Objectif"
                                                     stroke="#6c757d"
                                                     strokeDasharray="5 5"
+                                                    strokeWidth={2}
                                                 />
-                                                
                                             </LineChart>
                                         </ResponsiveContainer>
                                     </div>
@@ -261,33 +297,38 @@ export default function StatisticsPage() {
                             <div className="col-lg-6">
                                 <div className="card border-0 shadow-sm">
                                     <div className="card-body">
-                                        <h5 className="mb-3">Comparaison équipes</h5>
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <BarChart data={comparisonStats}>
-                                            <CartesianGrid strokeDasharray="3 3" />
-                                            <XAxis dataKey="team_name" />
-                                            <YAxis />
-                                            <Tooltip />
-                                            <Legend />
+                                        <h5 className="mb-3 d-flex align-items-center gap-2">
+                                            <FaChartBar className="text-primary" />
+                                            <span>Comparaison équipes</span>
+                                        </h5>
+                                        <ResponsiveContainer width="100%" height={300}>
+                                            <BarChart data={comparisonStats}>
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis dataKey="team_name" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Legend />
 
-                                            {/* Efficiency */}
-                                            <Bar dataKey="average_efficiency" name="Efficience moyenne">
-                                                {comparisonStats.map((entry, index) => (
-                                                    <Cell
-                                                        key={`cell-${index}`}
-                                                        fill={
-                                                            entry.average_efficiency >= entry.average_objective
-                                                                ? '#28a745' // green
-                                                                : '#dc3545' // red
-                                                        }
-                                                    />
-                                                ))}
-                                            </Bar>
+                                                <Bar dataKey="average_efficiency" name="Efficience moyenne">
+                                                    {comparisonStats.map((entry, index) => (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill={
+                                                                entry.average_efficiency >= entry.average_objective
+                                                                    ? '#28a745'
+                                                                    : '#dc3545'
+                                                            }
+                                                        />
+                                                    ))}
+                                                </Bar>
 
-                                            {/* Objective */}
-                                            <Bar dataKey="average_objective" name="Objectif moyen" fill="#9da8a8" />
-                                        </BarChart>
-                                    </ResponsiveContainer>
+                                                <Bar
+                                                    dataKey="average_objective"
+                                                    name="Objectif moyen"
+                                                    fill="#9da8a8"
+                                                />
+                                            </BarChart>
+                                        </ResponsiveContainer>
                                     </div>
                                 </div>
                             </div>
@@ -307,18 +348,25 @@ export default function StatisticsPage() {
                                                         <YAxis />
                                                         <Tooltip />
                                                         <Legend />
-                                                        <Line
+                                                      <Line
                                                             type="monotone"
                                                             dataKey="efficiency"
                                                             name="Efficience"
-                                                            stroke="#0d6efd"
+                                                            stroke="#2563eb"
+                                                            strokeWidth={3}
+                                                            dot={{ r: 4, strokeWidth: 2, fill: '#ffffff' }}
+                                                            activeDot={{ r: 7 }}
                                                         />
+
                                                         <Line
                                                             type="monotone"
                                                             dataKey="objective"
                                                             name="Objectif"
-                                                            stroke="#0c0c0b"
-                                                            strokeDasharray="5 5"
+                                                            stroke="#f59e0b"
+                                                            strokeWidth={2.5}
+                                                            strokeDasharray="7 5"
+                                                            dot={{ r: 3, strokeWidth: 2, fill: '#ffffff' }}
+                                                            activeDot={{ r: 6 }}
                                                         />
                                                     </LineChart>
                                                 </ResponsiveContainer>
@@ -329,45 +377,54 @@ export default function StatisticsPage() {
                                     <div className="col-lg-6">
                                         <div className="card border-0 shadow-sm">
                                             <div className="card-body">
-                                                <h5 className="mb-3">Top références</h5>
+                                                <h5 className="mb-3 d-flex align-items-center gap-2">
+                                                    <FaLayerGroup className="text-primary" />
+                                                    <span>Top références</span>
+                                                </h5>
                                                 <ResponsiveContainer width="100%" height={300}>
-                                                <BarChart data={teamStats?.charts?.top_references || []}>
-                                                    <CartesianGrid strokeDasharray="3 3" />
-                                                    <XAxis dataKey="code" />
-                                                    <YAxis />
-                                                    <Tooltip />
-                                                    <Legend />
+                                                    <BarChart data={teamStats?.charts?.top_references || []}>
+                                                        <CartesianGrid strokeDasharray="3 3" />
+                                                        <XAxis dataKey="code" />
+                                                        <YAxis />
+                                                        <Tooltip />
+                                                        <Legend />
 
-                                                    <Bar dataKey="total_quantity" name="Quantité totale">
-                                                        {(teamStats?.charts?.top_references || []).map((entry, index, array) => {
-                                                            const average =
-                                                                array.reduce((sum, item) => sum + Number(item.total_quantity || 0), 0) /
-                                                                (array.length || 1);
+                                                        <Bar dataKey="total_quantity" name="Quantité totale">
+                                                            {(teamStats?.charts?.top_references || []).map((entry, index, array) => {
+                                                                const average =
+                                                                    array.reduce(
+                                                                        (sum, item) =>
+                                                                            sum + Number(item.total_quantity || 0),
+                                                                        0
+                                                                    ) / (array.length || 1);
 
-                                                            return (
-                                                                <Cell
-                                                                    key={`qty-cell-${index}`}
-                                                                    fill={
-                                                                        Number(entry.total_quantity) >= average
-                                                                            ? '#28a745' // vert
-                                                                            : '#dc3545' // rouge
-                                                                    }
-                                                                />
-                                                            );
-                                                        })}
-                                                    </Bar>
+                                                                return (
+                                                                    <Cell
+                                                                        key={`qty-cell-${index}`}
+                                                                        fill={
+                                                                            Number(entry.total_quantity) >= average
+                                                                                ? '#28a745': '#dc3545'
+                                                                        }
+                                                                    />
+                                                                );
+                                                            })}
+                                                        </Bar>
 
-                                                    <Bar dataKey="usage_count" name="Utilisations" fill="#6c757d" />
-                                                </BarChart>
-                                            </ResponsiveContainer>
+                                                        <Bar
+                                                            dataKey="usage_count"
+                                                            name="Utilisations"
+                                                            fill="#6c757d"
+                                                        />
+                                                    </BarChart>
+                                                </ResponsiveContainer>
                                             </div>
                                         </div>
                                     </div>
-                            </>
-                        )}
-                    </div>
-                </>
-             )}
+                                </>
+                            )}
+                        </div>
+                    </>
+                )}
             </div>
         </PageWrapper>
     );
