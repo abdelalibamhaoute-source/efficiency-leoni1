@@ -3,39 +3,38 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Profile\UpdateOwnPasswordRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
-    /**
-     * Permet à l'utilisateur connecté de changer son propre mot de passe.
-     */
-    public function updatePassword(UpdateOwnPasswordRequest $request): JsonResponse
+    public function updatePassword(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $data = $request->validated();
-
-        if (! Hash::check($data['current_password'], $user->password)) {
-            return response()->json([
-                'message' => 'Le mot de passe actuel est incorrect.',
-            ], 422);
-        }
-
-        $user->update([
-            'password' => $data['password'],
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'current_password.required' => 'Mot de passe actuel obligatoire.',
+            'password.required' => 'Nouveau mot de passe obligatoire.',
+            'password.min' => 'Le nouveau mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
         ]);
 
-        // Option de sécurité : déconnecter toutes les anciennes sessions API
-        $user->tokens()->delete();
+        $user = $request->user();
 
-        $newToken = $user->createToken('auth_token')->plainTextToken;
+        if (! Hash::check($validated['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Le mot de passe actuel est incorrect.'],
+            ]);
+        }
+
+        $user->password = Hash::make($validated['password']);
+        $user->save();
 
         return response()->json([
-            'message' => 'Mot de passe modifié avec succès.',
-            'token' => $newToken,
-            'token_type' => 'Bearer',
+            'message' => 'Mot de passe mis à jour avec succès.',
         ]);
     }
 }
