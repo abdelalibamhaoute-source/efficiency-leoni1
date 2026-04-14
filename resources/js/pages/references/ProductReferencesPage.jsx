@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { FaEdit, FaPlus, FaSearch, FaTrash } from 'react-icons/fa';
 import api from '../../api/axios';
 import AlertMessage from '../../components/common/AlertMessage';
 import ConfirmButton from '../../components/common/ConfirmButton';
 import PageHeader from '../../components/common/PageHeader';
 import ProductReferenceForm from '../../components/forms/ProductReferenceForm';
-import EmptyState from '../../components/common/EmptyState';
-import LoaderOverlay from '../../components/common/LoaderOverlay';
 
 export default function ProductReferencesPage() {
     const [references, setReferences] = useState([]);
@@ -100,8 +99,9 @@ export default function ProductReferencesPage() {
                 <div className="col-lg-4">
                     <div className="card border-0 shadow-sm">
                         <div className="card-body">
-                            <h5 className="mb-3">
-                                {editingReference ? 'Modifier référence' : 'Nouvelle référence'}
+                            <h5 className="mb-3 d-flex align-items-center gap-2">
+                                <FaPlus className="text-primary" />
+                                <span>{editingReference ? 'Modifier référence' : 'Nouvelle référence'}</span>
                             </h5>
 
                             <ProductReferenceForm
@@ -136,14 +136,15 @@ export default function ProductReferencesPage() {
                                     />
                                 </div>
                                 <div className="col-md-3">
-                                    <button type="submit" className="btn btn-dark w-100">
-                                        Rechercher
+                                    <button type="submit" className="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2">
+                                        <FaSearch />
+                                        <span>Rechercher</span>
                                     </button>
                                 </div>
                             </form>
 
                             {loading ? (
-                                <LoaderOverlay text="Chargement des références..." />
+                                <p>Chargement...</p>
                             ) : (
                                 <div className="table-responsive">
                                     <table className="table table-hover align-middle">
@@ -170,31 +171,30 @@ export default function ProductReferencesPage() {
                                                         <td>{reference.efficiency_history_references_count}</td>
                                                         <td className="d-flex gap-2">
                                                             <button
-                                                                className="btn btn-primary btn-sm"
+                                                                className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
                                                                 onClick={() => setEditingReference(reference)}
                                                             >
-                                                                Modifier
+                                                                <FaEdit />
+                                                                <span className="d-none d-md-inline"></span>
                                                             </button>
 
                                                             <ConfirmButton
+                                                                className="btn btn-danger btn-sm d-inline-flex align-items-center gap-2"
                                                                 onConfirm={() => handleDelete(reference.id)}
                                                             >
-                                                                Supprimer
+                                                                <FaTrash />
+                                                                <span className="d-none d-md-inline"></span>
                                                             </ConfirmButton>
                                                         </td>
                                                     </tr>
                                                 ))
                                             ) : (
-                                                    <tr>
-                                                        <td colSpan="5" className="text-center">
-                                                            <EmptyState
-                                                                title="Aucune référence trouvée"
-                                                                description="Ajoutez une nouvelle référence ou modifiez votre recherche."
-                                                            />
-                                                        </td>
-                                                    </tr>
-
-                                             )}
+                                                <tr>
+                                                    <td colSpan="5" className="text-center">
+                                                        Aucune référence trouvée.
+                                                    </td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>

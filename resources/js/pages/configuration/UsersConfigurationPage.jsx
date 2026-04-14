@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { FaEdit, FaKey, FaSearch, FaToggleOff, FaToggleOn, FaUserPlus } from 'react-icons/fa';
 import api from '../../api/axios';
 import AlertMessage from '../../components/common/AlertMessage';
 import ConfirmButton from '../../components/common/ConfirmButton';
@@ -83,7 +84,7 @@ export default function UsersConfigurationPage() {
     };
 
     const handlePasswordReset = async (userId) => {
-       const password = window.prompt('Saisir le nouveau mot de passe utilisateur :');
+        const password = window.prompt('Saisir le nouveau mot de passe utilisateur :');
 
         if (!password) {
             return;
@@ -115,8 +116,9 @@ export default function UsersConfigurationPage() {
                 <div className="col-lg-4">
                     <div className="card border-0 shadow-sm">
                         <div className="card-body">
-                            <h5 className="mb-3">
-                                {editingUser ? 'Modifier utilisateur' : 'Nouvel utilisateur'}
+                            <h5 className="mb-3 d-flex align-items-center gap-2">
+                                <FaUserPlus className="text-primary" />
+                                <span>{editingUser ? 'Modifier utilisateur' : 'Nouvel utilisateur'}</span>
                             </h5>
 
                             <UserForm
@@ -153,8 +155,9 @@ export default function UsersConfigurationPage() {
                                     />
                                 </div>
                                 <div className="col-md-3">
-                                    <button type="submit" className="btn btn-dark w-100">
-                                        Rechercher
+                                    <button type="submit" className="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2">
+                                        <FaSearch />
+                                        <span>Rechercher</span>
                                     </button>
                                 </div>
                             </form>
@@ -189,25 +192,30 @@ export default function UsersConfigurationPage() {
                                                         </td>
                                                         <td className="d-flex flex-wrap gap-2">
                                                             <button
-                                                                className="btn btn-primary btn-sm"
+                                                                className="btn btn-primary btn-sm d-inline-flex align-items-center gap-2"
                                                                 onClick={() => setEditingUser(user)}
                                                             >
-                                                                Modifier
+                                                                <FaEdit />
+                                                                <span className="d-none d-md-inline">Modifier</span>
                                                             </button>
 
                                                             <button
-                                                                className="btn btn-warning btn-sm"
+                                                                className="btn btn-warning btn-sm d-inline-flex align-items-center gap-2"
                                                                 onClick={() => handlePasswordReset(user.id)}
                                                             >
-                                                                Password
+                                                                <FaKey />
+                                                                <span className="d-none d-md-inline">Password</span>
                                                             </button>
 
                                                             <ConfirmButton
-                                                                className="btn btn-secondary btn-sm"
+                                                                className="btn btn-secondary btn-sm d-inline-flex align-items-center gap-2"
                                                                 confirmMessage={`Changer le statut de ${user.name} ?`}
                                                                 onConfirm={() => handleStatusToggle(user)}
                                                             >
-                                                                {user.is_active ? 'Désactiver' : 'Activer'}
+                                                                {user.is_active ? <FaToggleOff /> : <FaToggleOn />}
+                                                                <span className="d-none d-md-inline">
+                                                                    {user.is_active ? 'Désactiver' : 'Activer'}
+                                                                </span>
                                                             </ConfirmButton>
                                                         </td>
                                                     </tr>
